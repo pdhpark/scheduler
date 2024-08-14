@@ -1,7 +1,6 @@
 package pdh.scheduler.service;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Service;
 import pdh.scheduler.dto.ScheduleRequestDto;
 import pdh.scheduler.dto.ScheduleResponseDto;
 import pdh.scheduler.entity.Schedule;
@@ -9,12 +8,13 @@ import pdh.scheduler.repository.ScheduleRepository;
 
 import java.util.List;
 
+@Service
 public class ScheduleService {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final ScheduleRepository scheduleRepository;
 
-    public ScheduleService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ScheduleService(ScheduleRepository scheduleRepository) {
+        this.scheduleRepository = scheduleRepository;
     }
 
     //1단계
@@ -23,7 +23,6 @@ public class ScheduleService {
         Schedule schedule = new Schedule(requestDto);
 
         //DB 저장
-        ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
         Schedule saveSchedule = scheduleRepository.save(schedule);
 
         //Entity => ResponseDto
@@ -34,17 +33,15 @@ public class ScheduleService {
 
     //3단계
     public List<ScheduleResponseDto> getSchedules(ScheduleRequestDto requestDto) {
-        ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
         return scheduleRepository.findAll(requestDto);
     }
 
     //2단계
     public ScheduleResponseDto getOneSchedule(Long id) {
-        ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
-
         // 해당 메모가 DB에 존재하는지 확인
         Schedule schedule = scheduleRepository.findById(id);
         if(schedule != null) {
+            schedule.setId(id);
             ScheduleResponseDto scheduleResponseDto = new ScheduleResponseDto(schedule);
             return scheduleResponseDto;
         } else {
@@ -54,13 +51,12 @@ public class ScheduleService {
 
     //4단계
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto requestDto) {
-        ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
-
         // 해당 메모가 DB에 존재하는지 확인
         Schedule schedule = scheduleRepository.findById(id);
         if(schedule != null) {
             scheduleRepository.updateSchedule(id, requestDto);
             ScheduleResponseDto scheduleResponseDto = new ScheduleResponseDto(scheduleRepository.findById(id));
+            scheduleResponseDto.setId(id);
             return scheduleResponseDto;
         } else {
             throw new IllegalArgumentException("선택한 스케줄은 존재하지 않습니다.");
@@ -69,8 +65,6 @@ public class ScheduleService {
 
     //5단계
     public Long deleteSchedule(Long id, ScheduleRequestDto requestDto) {
-        ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
-
         // 해당 메모가 DB에 존재하는지 확인
         Schedule schedule = scheduleRepository.findById(id);
         if(schedule != null) {

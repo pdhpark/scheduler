@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Repository;
 import pdh.scheduler.dto.ScheduleRequestDto;
 import pdh.scheduler.dto.ScheduleResponseDto;
 import pdh.scheduler.entity.Schedule;
@@ -13,6 +13,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public class ScheduleRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -21,6 +22,7 @@ public class ScheduleRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    //1단계
     public Schedule save(Schedule schedule) {
         //DB 저장
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
@@ -46,6 +48,7 @@ public class ScheduleRepository {
         return schedule;
     }
 
+    //3단계
     public List<ScheduleResponseDto> findAll(ScheduleRequestDto requestDto) {
         // DB 조회
         String sql = "SELECT * FROM schedule where DATE_FORMAT(updatetime,'%Y-%m-%d')  = ? or personname = ? order by updatetime desc";
@@ -65,11 +68,13 @@ public class ScheduleRepository {
         }, requestDto.getUpdatetime(), requestDto.getPersonname());
     }
 
+    //4단계
     public void updateSchedule(Long id, ScheduleRequestDto requestDto) {
         String sql = "UPDATE schedule SET personname = ?, todo = ?, updatetime = ? WHERE id = ? and passwords = ?";
         jdbcTemplate.update(sql, requestDto.getPersonname(), requestDto.getTodo(), LocalDateTime.now(), id, requestDto.getPasswords());
     }
 
+    //5단계
     public void delete(Long id, ScheduleRequestDto requestDto) {
         String sql = "DELETE FROM schedule WHERE id = ? and passwords = ?";
         jdbcTemplate.update(sql, id, requestDto.getPasswords());
