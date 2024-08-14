@@ -8,6 +8,6 @@ public class ScheduleRequestDto {
     private String passwords;
     private String personname;
     private String todo;
-
+    private String updatetime;
 
 }

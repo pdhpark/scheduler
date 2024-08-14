@@ -3,6 +3,7 @@ package pdh.scheduler.dto;
 import lombok.Getter;
 import pdh.scheduler.entity.Schedule;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -23,9 +24,11 @@ public class ScheduleResponseDto {
         this.updatetime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(schedule.getUpdatetime());
     }
 
-    public ScheduleResponseDto(Long id, String personname, String todo) {
+    public ScheduleResponseDto(Long id, String personname, String todo, LocalDateTime createtime, LocalDateTime updatetime) {
         this.id = id;
         this.personname = personname;
         this.todo = todo;
+        this.createtime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(createtime);
+        this.updatetime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(updatetime);
     }
 }

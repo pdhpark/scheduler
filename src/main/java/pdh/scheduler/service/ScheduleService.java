@@ -1,6 +1,7 @@
 package pdh.scheduler.service;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.RequestBody;
 import pdh.scheduler.dto.ScheduleRequestDto;
 import pdh.scheduler.dto.ScheduleResponseDto;
 import pdh.scheduler.entity.Schedule;
@@ -32,9 +33,9 @@ public class ScheduleService {
     }
 
     //3단계
-    public List<ScheduleResponseDto> getSchedules() {
+    public List<ScheduleResponseDto> getSchedules(ScheduleRequestDto requestDto) {
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
-        return scheduleRepository.findAll();
+        return scheduleRepository.findAll(requestDto);
     }
 
     //2단계
@@ -67,16 +68,17 @@ public class ScheduleService {
     }
 
     //5단계
-    public Long deleteSchedule(Long id) {
+    public Long deleteSchedule(Long id, ScheduleRequestDto requestDto) {
         ScheduleRepository scheduleRepository = new ScheduleRepository(jdbcTemplate);
 
         // 해당 메모가 DB에 존재하는지 확인
         Schedule schedule = scheduleRepository.findById(id);
         if(schedule != null) {
-            scheduleRepository.delete(id);
+            scheduleRepository.delete(id, requestDto);
             return id;
         } else {
             throw new IllegalArgumentException("선택한 스케줄은 존재하지 않습니다.");
         }
     }
+
 }

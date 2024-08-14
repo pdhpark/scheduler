@@ -27,9 +27,9 @@ public class ScheduleController {
 
     //3단계
     @GetMapping("/scheduler")
-    public List<ScheduleResponseDto> getSchedules() {
+    public List<ScheduleResponseDto> getSchedules(@RequestBody ScheduleRequestDto requestDto) {
         ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
-        return scheduleService.getSchedules();
+        return scheduleService.getSchedules(requestDto);
     }
 
     //2단계
@@ -46,10 +46,11 @@ public class ScheduleController {
         return scheduleService.updateSchedule(scheduleid, requestDto);
     }
 
+    //5단계
     @DeleteMapping("/scheduler/{scheduleid}")
-    public Long deleteSchedule(@PathVariable Long scheduleid) {
+    public Long deleteSchedule(@PathVariable Long scheduleid, @RequestBody ScheduleRequestDto requestDto) {
         ScheduleService scheduleService = new ScheduleService(jdbcTemplate);
-        return scheduleService.deleteSchedule(scheduleid);
+        return scheduleService.deleteSchedule(scheduleid, requestDto);
     }
 
 }
